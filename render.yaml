@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: netease-music-proxy
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+    healthCheckPath: /health
+    autoDeploy: true
+    region: oregon
