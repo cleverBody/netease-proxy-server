@@ -187,15 +187,21 @@ Object.keys(NeteaseCloudMusicApi).forEach(apiName => {
     app.get(`/api/${slashPath}`, handler);
     app.post(`/api/${slashPath}`, handler);
   }
-  
+
   if (apiName.startsWith('playlist_')) {
     const slashPath = apiName.replace(/^playlist_/, 'playlist/');
     app.get(`/api/${slashPath}`, handler);
     app.post(`/api/${slashPath}`, handler);
   }
-  
+
   if (apiName.startsWith('artist_')) {
     const slashPath = apiName.replace(/^artist_/, 'artist/');
+    app.get(`/api/${slashPath}`, handler);
+    app.post(`/api/${slashPath}`, handler);
+  }
+
+  if (apiName.startsWith('toplist_')) {
+    const slashPath = apiName.replace(/^toplist_/, 'toplist/');
     app.get(`/api/${slashPath}`, handler);
     app.post(`/api/${slashPath}`, handler);
   }

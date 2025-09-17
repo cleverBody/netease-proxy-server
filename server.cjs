@@ -98,6 +98,18 @@ const handleApiError = (error, req, res) => {
   console.error(`API错误 [${req.method} ${req.path}]:`, error.message);
 
   if (error.status) {
+    // 如果有body信息，优先使用body中的错误信息
+    if (error.body && error.body.code) {
+      return res.status(error.status).json({
+        success: false,
+        error: error.body.message || error.body.msg || error.message || '请求失败',
+        code: error.body.code,
+        data: error.body,
+        path: req.path,
+        timestamp: new Date().toISOString()
+      });
+    }
+
     return res.status(error.status).json({
       success: false,
       error: error.message || '请求失败',
@@ -152,8 +164,22 @@ Object.keys(NeteaseCloudMusicApi).forEach(apiName => {
       const result = await apiFunction(params);
 
       console.log(`API调用成功: ${apiName}, 状态码: ${result.status}`);
+      console.log(`响应体:`, JSON.stringify(result.body, null, 2));
 
       if (result && result.body) {
+        // 如果是错误响应，直接返回错误信息
+        if (result.body.code && result.body.code !== 200) {
+          console.log(`检测到错误响应: code=${result.body.code}, message=${result.body.message}`);
+          return res.status(400).json({
+            success: false,
+            error: result.body.message || result.body.msg || '请求失败',
+            code: result.body.code,
+            data: result.body,
+            path: req.path,
+            timestamp: new Date().toISOString()
+          });
+        }
+
         res.json({
           success: true,
           data: result.body,
@@ -187,7 +213,7 @@ Object.keys(NeteaseCloudMusicApi).forEach(apiName => {
     app.get(`/api/${slashPath}`, handler);
     app.post(`/api/${slashPath}`, handler);
   }
-  
+
   if (apiName.startsWith('top_')) {
     const slashPath = apiName.replace(/^top_/, 'top/');
     app.get(`/api/${slashPath}`, handler);
@@ -204,7 +230,7 @@ Object.keys(NeteaseCloudMusicApi).forEach(apiName => {
   // 为了兼容桌面端，添加netease前缀的路由
   app.get(`/api/netease/${apiPath}`, handler);
   app.post(`/api/netease/${apiPath}`, handler);
-  
+
   if (apiName.includes('_')) {
     app.get(`/api/netease/${apiName}`, handler);
     app.post(`/api/netease/${apiName}`, handler);
