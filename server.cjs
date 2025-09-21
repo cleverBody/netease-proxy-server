@@ -241,6 +241,49 @@ Object.keys(NeteaseCloudMusicApi).forEach(apiName => {
 
 console.log(`✅ 成功注册 ${registeredCount} 个API接口`);
 
+// 引入解锁功能
+const { getNeteaseSongUrl, getKuwoSongUrl } = require('./unblock.js');
+
+// 解锁接口
+app.get('/api/unblock', (req, res) => {
+  res.json({
+    name: 'UnblockAPI',
+    description: 'SPlayer Mobile UnblockAPI service',
+    author: '@imsyy',
+    content: '部分接口采用 @939163156 by GD音乐台(music.gdstudio.xyz)，仅供本人学习使用，不可传播下载内容，不可用于商业用途。',
+    endpoints: {
+      netease: '/api/unblock/netease?id=歌曲ID',
+      kuwo: '/api/unblock/kuwo?keyword=歌曲名-歌手名'
+    }
+  });
+});
+
+// 网易云解锁
+app.get('/api/unblock/netease', async (req, res) => {
+  try {
+    const { id } = req.query;
+    console.log(`解锁网易云歌曲: ${id}`);
+    const result = await getNeteaseSongUrl(id);
+    res.json(result);
+  } catch (error) {
+    handleApiError(error, req, res);
+  }
+});
+
+// 酷我解锁
+app.get('/api/unblock/kuwo', async (req, res) => {
+  try {
+    const { keyword } = req.query;
+    console.log(`解锁酷我歌曲: ${keyword}`);
+    const result = await getKuwoSongUrl(keyword);
+    res.json(result);
+  } catch (error) {
+    handleApiError(error, req, res);
+  }
+});
+
+console.log('🔓 解锁功能已启用');
+
 // 404处理
 app.use('*', (req, res) => {
   res.status(404).json({
