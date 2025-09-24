@@ -220,6 +220,78 @@ A: 可能是版权限制或需要VIP权限，尝试其他歌曲。
 ### Q: 服务器启动失败？
 A: 检查端口3000是否被占用，或修改package.json中的PORT环境变量。
 
+## ☁️ Render.com 部署
+
+### 方式一：使用 render.yaml（推荐）
+
+1. **Fork 项目到你的 GitHub**
+
+2. **在 Render.com 创建新服务**
+   - 登录 [Render.com](https://render.com)
+   - 点击 "New" > "Blueprint"
+   - 连接你的 GitHub 仓库
+   - 选择包含 `render.yaml` 的仓库
+   - Render 会自动读取配置并部署
+
+3. **配置会自动应用**
+   - 服务名：`netease-music-proxy`
+   - 环境：Node.js
+   - 构建命令：`npm install`
+   - 启动命令：`npm start`
+   - 健康检查：`/health`
+
+### 方式二：手动配置
+
+1. **在 Render.com 创建 Web Service**
+   - 选择 "New" > "Web Service"
+   - 连接你的 GitHub 仓库
+
+2. **基本配置**
+   - **Name**: `netease-music-proxy`（或自定义名称）
+   - **Root Directory**: `netease-proxy-server`
+   - **Environment**: Node
+   - **Region**: Oregon（或其他地区）
+   - **Branch**: main
+
+3. **构建和部署设置**
+   - **Build Command**: `npm install`
+   - **Start Command**: `npm start`
+
+4. **环境变量**
+   - `NODE_ENV`: `production`
+   - `PORT`: `10000`（Render 自动设置）
+
+5. **高级设置**
+   - **Health Check Path**: `/health`
+   - **Auto-Deploy**: Yes
+
+### 部署后访问
+
+部署成功后，你会获得一个类似这样的地址：
+- 服务地址：`https://your-service-name.onrender.com`
+- API 基础地址：`https://your-service-name.onrender.com/api`
+- 健康检查：`https://your-service-name.onrender.com/health`
+
+### 在移动端中使用
+
+部署完成后，需要在移动端项目中更新 API 地址：
+
+1. **修改 Capacitor 配置**（`mobile/capacitor.config.ts`）：
+```typescript
+server: {
+  allowNavigation: [
+    'https://your-service-name.onrender.com',
+    'https://*.music.126.net',
+    'https://*.netease.com'
+  ]
+}
+```
+
+2. **更新 API 配置**（`mobile/src/api/index.ts`）：
+```typescript
+const API_BASE_URL = 'https://your-service-name.onrender.com/api'
+```
+
 ## 🛠️ 自定义配置
 
 ### 修改端口
