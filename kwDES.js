@@ -568,6 +568,12 @@ const crypt = (msg, key, mode) => {
 };
 
 const SECRET_KEY = Buffer.from("ylzsxkwm");
-export const encrypt = (msg) => crypt(msg, SECRET_KEY, 0);
-export const decrypt = (msg) => crypt(msg, SECRET_KEY, 1);
-export const encryptQuery = (query) => encrypt(Buffer.from(query)).toString("base64");
+const encrypt = (msg) => crypt(msg, SECRET_KEY, 0);
+const decrypt = (msg) => crypt(msg, SECRET_KEY, 1);
+const encryptQuery = (query) => encrypt(Buffer.from(query)).toString("base64");
+
+module.exports = {
+  encrypt,
+  decrypt,
+  encryptQuery
+};
